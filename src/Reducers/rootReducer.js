@@ -1,4 +1,3 @@
-import { bindActionCreators } from "redux"
 import { ADD_FEATURE,REMOVE_FEATURE} from '../Actions/ShopActions'
 
 const initialState = {
@@ -19,16 +18,36 @@ const initialState = {
 };
 
 export default (state = initialState, { type, payload }) => {
+  const itemFilter = () => {
+    const newItem = state.additionalFeatures.find(item => item.id === payload)
+    return newItem
+  }
   switch (type) {
     case ADD_FEATURE:
+      const newItemPrice = itemFilter()
       return {
         ...state,
+        additionalPrice: state.additionalPrice + newItemPrice.price,
         car: {
           ...state.car,
-          features: [ ...state.car.features, payload ]
+          features: [ 
+            ...state.car.features,
+            itemFilter()
+          ]
         }
       }
-
+      case REMOVE_FEATURE:
+        const removedItemPrice = itemFilter();
+        return {
+          ...state,
+          additionalPrice: state.additionalPrice - removedItemPrice.price,
+          car: {
+            ...state.car,
+            features: [
+              ...state.car.features.filter( item => item.id !== payload)
+            ]
+          }
+        }
     default:
       return state
   }
